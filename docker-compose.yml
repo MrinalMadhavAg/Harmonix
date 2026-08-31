@@ -1,0 +1,60 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: harmonix-postgres
+    environment:
+      POSTGRES_USER: harmonix
+      POSTGRES_PASSWORD: harmonix
+      POSTGRES_DB: harmonix
+    ports:
+      - "5433:5432"
+    volumes:
+      - harmonix-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U harmonix -d harmonix"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 10s
+
+  ml-service:
+    build:
+      context: ./backend
+    container_name: harmonix-ml-service
+    environment:
+      DATABASE_URL: postgresql://harmonix:harmonix@postgres:5432/harmonix
+      EMBEDDING_MODEL: sentence-transformers/all-MiniLM-L6-v2
+      HF_HOME: /models
+      SENTENCE_TRANSFORMERS_HOME: /models
+      AUTO_SEED: "true"
+      # Single worker: FAISS/BM25 indexes are in-process memory structures.
+      # See docs/ARCHITECTURE.md "Worker model" for the rationale.
+      UVICORN_WORKERS: "1"
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/health', timeout=4).status==200 else 1)\""]
+      interval: 10s
+      timeout: 8s
+      retries: 30
+      start_period: 60s
+
+  web:
+    build:
+      context: ./frontend
+    container_name: harmonix-web
+    environment:
+      # The browser only ever calls /api on its own origin; Next rewrites that
+      # to this address inside the container network. See next.config.js.
+      API_BASE_INTERNAL: http://ml-service:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      ml-service:
+        condition: service_healthy
+
+volumes:
+  harmonix-pgdata:

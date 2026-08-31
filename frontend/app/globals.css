@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-surface-subtle text-ink text-base;
+  }
+
+  /* Tabular figures keep numeric columns aligned in dense tables. */
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+
+  ::selection {
+    @apply bg-accent-100;
+  }
+}
+
+@layer components {
+  .panel {
+    @apply bg-surface border border-line rounded-lg shadow-card;
+  }
+
+  .panel-header {
+    @apply flex items-center justify-between gap-3 px-4 py-3 border-b border-line;
+  }
+
+  .panel-title {
+    @apply text-[0.8125rem] font-semibold text-ink tracking-tight;
+  }
+
+  .data-table {
+    @apply w-full text-sm border-collapse;
+  }
+
+  .data-table thead th {
+    @apply text-2xs font-semibold uppercase tracking-wide text-ink-subtle
+           bg-surface-subtle border-b border-line px-3 py-2 text-left whitespace-nowrap;
+  }
+
+  .data-table tbody td {
+    @apply px-3 py-2 border-b border-line align-top;
+  }
+
+  .data-table tbody tr:hover {
+    @apply bg-accent-50/50;
+  }
+
+  .data-table tbody tr:last-child td {
+    @apply border-b-0;
+  }
+
+  .field-label {
+    @apply block text-2xs font-medium uppercase tracking-wide text-ink-subtle mb-1;
+  }
+
+  .input {
+    @apply w-full h-8 px-2.5 text-sm bg-surface border border-line rounded
+           text-ink placeholder:text-ink-faint
+           focus:outline-none focus:ring-2 focus:ring-accent-200 focus:border-accent-500;
+  }
+
+  select.input {
+    @apply pr-7 appearance-none bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+    background-position: right 0.5rem center;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-1.5 h-8 px-3 rounded
+           text-sm font-medium border transition-colors
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-accent-500 border-accent-500 text-white
+           hover:bg-accent-600 hover:border-accent-600;
+  }
+
+  .btn-secondary {
+    @apply btn bg-surface border-line-strong text-ink hover:bg-surface-subtle;
+  }
+
+  .btn-danger {
+    @apply btn bg-surface border-state-danger/40 text-state-danger hover:bg-state-dangerBg;
+  }
+
+  .btn-ghost {
+    @apply btn border-transparent text-ink-muted hover:bg-surface-muted;
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-2xs
+           font-medium border whitespace-nowrap;
+  }
+
+  .kpi-value {
+    @apply text-2xl font-semibold text-ink tnum tracking-tight;
+  }
+
+  .breadcrumb-sep {
+    @apply text-ink-faint px-1.5 select-none;
+  }
+}
+
+/* Recharts: keep the surface neutral and the grid quiet. */
+.recharts-cartesian-axis-tick text {
+  font-size: 11px;
+  fill: #6b7280;
+}
+.recharts-cartesian-grid line {
+  stroke: #e2e6ec;
+}
+.recharts-default-tooltip {
+  border-radius: 4px !important;
+  border: 1px solid #cbd2dc !important;
+  font-size: 12px !important;
+  box-shadow: 0 2px 8px -2px rgb(16 24 40 / 0.12) !important;
+}
